@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status Updates</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .sidebar {
+            width: 60px;
+            transition: width 0.3s ease;
+            overflow: hidden;
+        }
+    
+        .expanded {
+            width: 200px;
+        }
+    
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            color: white;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+    
+        .sidebar ul li a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    
+        .sidebar.expanded .text {
+            display: inline;
+        }
+    
+        .sidebar:not(.expanded) .text {
+            display: none;
+        }
+    
+        .main-content {
+            height: 100vh;
+            width: calc(100% - 60px);
+            margin-left: 60px;
+            transition: all 0.3s ease;
+        }
+    
+        .sidebar.expanded + .main-content {
+            width: calc(100% - 200px);
+            margin-left: 200px;
+        }
+
+        .status-circle {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-circle::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00dbde, #fc00ff);
+            z-index: -1;
+        }
+
+        .status-content {
+            max-height: calc(100vh - 180px);
+        }
+        .status-view-container{
+            width: 500px;
+        }
+
+        @media (max-width: 768px) {
+            .status-list-container {
+                width: 100%;
+                position: static;
+            }
+            .status-view-container {
+                margin-left: 0;
+                display: none;
+            }
+            .status-view-container.active {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex">
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar bg-gray-800 text-white p-2 fixed h-full">
+        <ul class="space-y-4">
+            <li>
+                <a href="#" onclick="toggleSidebar()" class="flex items-center gap-2 p-2 text-white hover:bg-gray-700 transition-colors" aria-label="Toggle sidebar">
+                    <i class="fas fa-bars"></i>
+                    <span class="text">Menu</span>
+                </a>
+            </li>
+            <li>
+                <a href="homebar.html" class="flex items-center gap-2 p-2 text-white hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-home"></i>
+                    <span class="text">Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="statusbar.html" class="flex items-center gap-2 p-2 text-white bg-gray-700 rounded">
+                    <i class="fas fa-circle-notch"></i>
+                    <span class="text">Status</span>
+                </a>
+            </li>
+            <li>
+                <a href="callbar.html" class="flex items-center gap-2 p-2 text-white hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-phone"></i>
+                    <span class="text">Calls</span>
+                </a>
+            </li>
+            <li>
+                <a href="accountbar.html" class="flex items-center gap-2 p-2 text-white hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-user"></i>
+                    <span class="text">Account</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content flex flex-col md:flex-row w-300">
+        <!-- Status List -->
+        <div class="status-list-container w-full md:w-1/3 bg-white shadow-lg p-4 overflow-y-auto fixed h-full ">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">Status Updates</h2>
+                <button onclick="createStatus()" class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm hover:bg-blue-600 transition">
+                    <i class="fas fa-plus mr-1"></i> New
+                </button>
+            </div>
+            
+            <div class="status-list flex flex-col gap-4">
+                <!-- Recent Updates -->
+                <h3 class="text-sm font-semibold text-gray-500 mb-2">RECENT UPDATES</h3>
+                
+                <div class="status-item flex items-center w-full cursor-pointer p-2 rounded-lg hover:bg-gray-100 transition" 
+                     onclick="showStatus('Hey there! Just checking in with everyone.', null, 'warner', 'https://images.news18.com/ibnlive/uploads/2022/11/david-warner-reuters-166909589916x9.jpg?impolicy=website&width=640&height=360', '10 min ago')">
+                    <div class="status-circle w-14 h-14 rounded-full overflow-hidden mr-3 flex items-center justify-center">
+                        <img src="https://images.news18.com/ibnlive/uploads/2022/11/david-warner-reuters-166909589916x9.jpg?impolicy=website&width=640&height=360" alt="Alex Johnson" class="w-12 h-12 rounded-full object-cover border-2 border-white">
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-medium truncate">warner</h4>
+                            <span class="text-xs text-gray-500">10 min ago</span>
+                        </div>
+                        <p class="text-xs text-gray-500 truncate">Hey there! Just checking in...</p>
+                    </div>
+                </div>
+
+                <div class="status-item flex items-center w-full cursor-pointer p-2 rounded-lg hover:bg-gray-100 transition" 
+                     onclick="showStatus(null, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSV3-vJFx9oPtSFxOD3TDsqn4509-CmIkNjwQ&s/300x500', 'virat', ' https://blog.lvpei.org/wp-content/uploads/2021/03/virat.png', '25 min ago')">
+                    <div class="status-circle w-14 h-14 rounded-full overflow-hidden mr-3 flex items-center justify-center">
+                        <img src=" https://blog.lvpei.org/wp-content/uploads/2021/03/virat.png" alt="Sarah Williams" class="w-12 h-12 rounded-full object-cover border-2 border-white">
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-medium truncate">virat</h4>
+                            <span class="text-xs text-gray-500">25 min ago</span>
+                        </div>
+                        <p class="text-xs text-gray-500 truncate">Photo update</p>
+                    </div>
+                </div>
+
+                <!-- Viewed Updates -->
+                <h3 class="text-sm font-semibold text-gray-500 mb-2 mt-6">VIEWED UPDATES</h3>
+                
+                <div class="status-item flex items-center w-full cursor-pointer p-2 rounded-lg hover:bg-gray-100 transition" 
+                     onclick="showStatus('Working on some exciting new projects! Stay tuned for updates.', null, 'raina', 'https://www.pratidintv.com/wp-content/uploads/2025/03/suresh-raina2.jpg', '2 hrs ago')">
+                    <div class="w-14 h-14 rounded-full overflow-hidden mr-3 flex items-center justify-center bg-gray-200">
+                        <img src="https://www.pratidintv.com/wp-content/uploads/2025/03/suresh-raina2.jpg" alt="Michael Chen" class="w-12 h-12 rounded-full object-cover border-2 border-white">
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-medium truncate">raina</h4>
+                            <span class="text-xs text-gray-500">2 hrs ago</span>
+                        </div>
+                        <p class="text-xs text-gray-500 truncate">Working on some exciting new...</p>
+
+                    </div>
+                </div>
+
+                <div class="status-item flex items-center w-full cursor-pointer p-2 rounded-lg hover:bg-gray-100 transition" 
+                     onclick="showStatus('Beautiful day for a hike! 🏞️ #nature #outdoors', null, 'tim', 'https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcS4e8MpN30HG6y1986cRehSLs_Srw7L6AExSp26K_SLvgLxMwXMwOT7qA_O86zc3-FmrfNUf2mPFwaesQg', '5 hrs ago')">
+                    <div class="w-14 h-14 rounded-full overflow-hidden mr-3 flex items-center justify-center bg-gray-200">
+                        <img src="https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcS4e8MpN30HG6y1986cRehSLs_Srw7L6AExSp26K_SLvgLxMwXMwOT7qA_O86zc3-FmrfNUf2mPFwaesQg" alt="Emma Davis" class="w-12 h-12 rounded-full object-cover border-2 border-white">
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-medium truncate">tim</h4>
+                            <span class="text-xs text-gray-500">5 hrs ago</span>
+                        </div>
+                        <p class="text-xs text-gray-500 truncate">Beautiful day for a hike! 🏞️...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status View -->
+        <div id="statusView" class="status-view-container flex-1 ml-0 md:ml-[33.33%] flex flex-col bg-gray-50">
+            <!-- Top Bar -->
+            <div class="bg-white shadow-sm p-4 flex items-center">
+                <button id="backButton" class="md:hidden mr-3 text-gray-600" onclick="hideStatusView()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <img id="status-profile" src="" class="rounded-full w-10 h-10 mr-3 hidden">
+                <div class="flex-1">
+                    <h3 id="status-name" class="font-semibold ml-10">Select a Status</h3>
+                    <p id="status-time" class="text-xs text-gray-500 hidden"></p>
+                </div>
+                <div class="flex space-x-2">
+                    <button class="p-2 text-gray-500 hover:text-blue-500">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Status Display -->
+            <div class="status-content flex-1 p-4 overflow-y-auto flex flex-col items-center justify-center" id="statusDisplay">
+                <div class="text-center">
+                    <i class="fas fa-comment-dots text-gray-300 text-5xl mb-4"></i>
+                    <p class="text-gray-500">Select a status to view</p>
+                </div>
+            </div>
+
+            <!-- Reply Section -->
+            <div class="p-4 bg-white border-t">
+                <div class="flex items-center">
+                    <input type="text" id="reply" class="flex-1 p-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-300" 
+                           placeholder="Reply to status..." onkeypress="handleReplyKeyPress(event)">
+                    <button onclick="sendReply()" class="bg-blue-500 text-white px-4 py-2 rounded-r-lg hover:bg-blue-600 transition">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <div id="repliesContainer" class="mt-3 space-y-2 hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Status Modal -->
+    <div id="createStatusModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg w-full max-w-md mx-4">
+            <div class="p-4 border-b flex justify-between items-center">
+                <h3 class="font-semibold">Create Status Update</h3>
+                <button onclick="closeCreateStatus()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-4">
+                <textarea id="statusText" class="w-full p-3 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-300" 
+                          placeholder="What's on your mind?" rows="4"></textarea>
+                <div class="flex justify-end space-x-2">
+                    <button onclick="closeCreateStatus()" class="px-4 py-2 border rounded-lg hover:bg-gray-100">Cancel</button>
+                    <button onclick="postStatus()" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Post</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('expanded');
+        }
+
+        // Status data and reply history
+        let replyHistory = {};
+        let currentStatus = null;
+
+        // Show status in view panel
+        function showStatus(text, imageUrl, userName, profileImage, time) {
+            const display = document.getElementById('statusDisplay');
+            const headerProfile = document.getElementById('status-profile');
+            const headerName = document.getElementById('status-name');
+            const statusTime = document.getElementById('status-time');
+            const statusView = document.getElementById('statusView');
+            const repliesContainer = document.getElementById('repliesContainer');
+
+            // Update current status
+            currentStatus = { userName, profileImage };
+
+            // Update top bar
+            headerProfile.src = profileImage || 'https://via.placeholder.com/50';
+            headerProfile.alt = userName;
+            headerProfile.classList.remove('hidden');
+            headerName.textContent = userName || 'Unknown User';
+            statusTime.textContent = time || '';
+            statusTime.classList.remove('hidden');
+
+            // Update status display
+            display.innerHTML = '';
+            if (imageUrl) {
+                const imgContainer = document.createElement('div');
+                imgContainer.className = 'w-full flex justify-center';
+                
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.alt = 'Status image';
+                img.className = 'max-w-full max-h-[70vh] object-contain rounded-lg shadow-md';
+                imgContainer.appendChild(img);
+                display.appendChild(imgContainer);
+            } else if (text) {
+                const textContainer = document.createElement('div');
+                textContainer.className = 'bg-white p-6 rounded-lg shadow-md max-w-md w-full';
+                
+                const p = document.createElement('p');
+                p.textContent = text;
+                p.className = 'text-gray-800 text-lg';
+                textContainer.appendChild(p);
+                display.appendChild(textContainer);
+            }
+
+            // Load any existing replies
+            loadReplies(userName);
+
+            // Show replies container if there are replies
+            if (replyHistory[userName] && replyHistory[userName].length > 0) {
+                repliesContainer.classList.remove('hidden');
+            } else {
+                repliesContainer.classList.add('hidden');
+            }
+
+            // Show status view (important for mobile)
+            statusView.classList.add('active');
+            document.querySelector('.status-list-container').classList.add('hidden', 'md:block');
+            statusView.classList.remove('hidden');
+        }
+
+        // Hide status view (for mobile)
+        function hideStatusView() {
+            document.getElementById('statusView').classList.remove('active');
+            document.querySelector('.status-list-container').classList.remove('hidden');
+        }
+
+        // Load replies for a status
+        function loadReplies(userName) {
+            const repliesContainer = document.getElementById('repliesContainer');
+            repliesContainer.innerHTML = '';
+            
+            if (replyHistory[userName] && replyHistory[userName].length > 0) {
+                replyHistory[userName].forEach(reply => {
+                    const replyDiv = document.createElement('div');
+                    replyDiv.className = 'flex items-start gap-2';
+                    
+                    replyDiv.innerHTML = `
+                        <img src="${currentStatus.profileImage}" class="w-8 h-8 rounded-full mt-1">
+                        <div class="bg-gray-100 p-3 rounded-lg flex-1">
+                            <p class="text-sm">${reply.text}</p>
+                            <p class="text-xs text-gray-500 mt-1">${reply.time}</p>
+                        </div>
+                    `;
+                    repliesContainer.appendChild(replyDiv);
+                });
+                repliesContainer.classList.remove('hidden');
+            }
+        }
+
+        // Send reply to current status
+        function sendReply() {
+            const replyInput = document.getElementById('reply');
+            const userName = currentStatus?.userName;
+            
+            if (replyInput.value.trim() !== "" && userName) {
+                if (!replyHistory[userName]) replyHistory[userName] = [];
+                
+                const newReply = {
+                    text: replyInput.value,
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                };
+                
+                replyHistory[userName].push(newReply);
+                loadReplies(userName);
+                replyInput.value = "";
+            }
+        }
+
+        // Handle Enter key for replies
+        function handleReplyKeyPress(event) {
+            if (event.key === "Enter") {
+                sendReply();
+            }
+        }
+
+        // Create new status modal
+        function createStatus() {
+            document.getElementById('createStatusModal').classList.remove('hidden');
+        }
+
+        function closeCreateStatus() {
+            document.getElementById('createStatusModal').classList.add('hidden');
+            document.getElementById('statusText').value = "";
+        }
+
+        function postStatus() {
+            const statusText = document.getElementById('statusText').value.trim();
+            if (statusText) {
+                // In a real app, you would send this to your backend
+                alert(`Status posted: "${statusText}"`);
+                closeCreateStatus();
+            }
+        }
+
+        // Make responsive
+        function handleResize() {
+            if (window.innerWidth >= 768) {
+                document.querySelector('.status-list-container').classList.remove('hidden');
+                document.getElementById('statusView').classList.remove('hidden');
+            }
+        }
+
+        window.addEventListener('resize', handleResize);
+        handleResize();
+    </script>
+</body>
+</html>

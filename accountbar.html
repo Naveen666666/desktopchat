@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings</title>
+    <!-- Using only Tailwind CSS (removed Bootstrap to avoid conflicts) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Using latest Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .sidebar {
+            width: 60px;
+            transition: width 0.3s ease;
+            overflow: hidden;
+        }
+    
+        .expanded {
+            width: 200px;
+        }
+    
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            color: white;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+    
+        .sidebar ul li a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    
+        .sidebar.expanded .text {
+            display: inline;
+        }
+    
+        .sidebar:not(.expanded) .text {
+            display: none;
+        }
+    
+        .main-content {
+            height: 100vh;
+            width: calc(100% - 60px);
+            margin-left: 60px;
+            transition: all 0.3s ease;
+        }
+    
+        .sidebar.expanded + .main-content {
+            width: calc(100% - 200px);
+            margin-left: 200px;
+        }
+
+        .profile-picture {
+            transition: all 0.3s ease;
+        }
+
+        .profile-picture:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+
+        .profile-picture-edit {
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .profile-picture-container:hover .profile-picture-edit {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            .profile-card {
+                width: 100%;
+                margin: 1rem 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar bg-gray-800 text-white p-4 fixed h-full">
+            <ul class="space-y-4">
+                <li>
+                    <a href="#" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+                        <i class="fas fa-bars"></i>
+                        <span class="text">Menu</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="homebar.html">
+                        <i class="fas fa-home"></i>
+                        <span class="text">Home</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="statusbar.html">
+                        <i class="fas fa-circle-notch"></i>
+                        <span class="text">Status</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="callbar.html">
+                        <i class="fas fa-phone"></i>
+                        <span class="text">Calls</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="accountbar.html" class="bg-gray-700 rounded">
+                        <i class="fas fa-user"></i>
+                        <span class="text">Account</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content flex-1 p-8 overflow-y-auto">
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-3xl font-bold text-gray-800 mb-8">Account Settings</h1>
+                
+                <!-- Profile Card -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
+                            <!-- Profile Picture -->
+                            <div class="profile-picture-container relative">
+                                <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="Profile Picture" 
+                                     class="profile-picture w-32 h-32 rounded-full object-cover border-4 border-blue-100 shadow-md">
+                                <div class="profile-picture-edit absolute bottom-0 right-0 bg-blue-500 text-white p-2 rounded-full cursor-pointer hover:bg-blue-600">
+                                    <i class="fas fa-camera"></i>
+                                    <input type="file" id="profilePictureInput" class="hidden" accept="image/*">
+                                </div>
+                            </div>
+                            
+                            <!-- Profile Info -->
+                            <div class="flex-1 w-full">
+                                <div class="mb-4">
+                                    <label for="userName" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                    <input type="text" id="userName" placeholder="Enter your name" 
+                                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="userStatus" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                    <input type="text" id="userStatus" placeholder="What's on your mind?" 
+                                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 px-6 py-4 border-t flex justify-end">
+                        <button onclick="updateProfile()" 
+                                class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition">
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Account Details -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+                    <div class="px-6 py-4 border-b">
+                        <h2 class="text-xl font-semibold text-gray-800">Account Information</h2>
+                    </div>
+                    
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="phoneNumber" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                            <div class="flex">
+                                <select class="bg-gray-100 border border-r-0 border-gray-300 rounded-l-lg p-3 focus:outline-none">
+                                    <option>+1</option>
+                                    <option>+44</option>
+                                    <option>+91</option>
+                                </select>
+                                <input type="tel" id="phoneNumber" placeholder="Phone number" 
+                                       class="flex-1 p-3 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email (optional)</label>
+                            <input type="email" id="email" placeholder="your@email.com" 
+                                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Account Created</label>
+                            <div class="p-3 bg-gray-100 rounded-lg text-gray-600">January 15, 2023</div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Last Active</label>
+                            <div class="p-3 bg-gray-100 rounded-lg text-gray-600">Just now</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Privacy & Security -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="px-6 py-4 border-b">
+                        <h2 class="text-xl font-semibold text-gray-800">Privacy & Security</h2>
+                    </div>
+                    
+                    <div class="p-6 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="font-medium text-gray-800">Show Last Seen</h3>
+                                <p class="text-sm text-gray-500">Who can see when you were last active</p>
+                            </div>
+                            <select class="bg-gray-100 border border-gray-300 rounded-lg p-2 text-sm focus:outline-none">
+                                <option>Everyone</option>
+                                <option>My Contacts</option>
+                                <option>Nobody</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="font-medium text-gray-800">Profile Photo</h3>
+                                <p class="text-sm text-gray-500">Who can see your profile photo</p>
+                            </div>
+                            <select class="bg-gray-100 border border-gray-300 rounded-lg p-2 text-sm focus:outline-none">
+                                <option>Everyone</option>
+                                <option>My Contacts</option>
+                                <option>Nobody</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="font-medium text-gray-800">Read Receipts</h3>
+                                <p class="text-sm text-gray-500">Show when you've read messages</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" value="" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 px-6 py-4 border-t flex justify-between items-center">
+                        <div>
+                            <h3 class="font-medium text-gray-800">Delete My Account</h3>
+                            <p class="text-sm text-gray-500">Permanently delete your account and all data</p>
+                        </div>
+                        <button class="text-red-600 hover:text-red-800 font-medium transition">
+                            Delete Account
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Logout Button -->
+                <div class="mt-8 text-center">
+                    <a href="index.html" class="inline-block bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-8 rounded-lg transition">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Log Out
+                    </a>
+                    <p class="text-xs text-gray-500 mt-2">
+                        Chat history on this computer will be cleared when you log out.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle sidebar
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('expanded');
+        }
+
+        // Update profile information
+        function updateProfile() {
+            const userName = document.getElementById('userName').value;
+            const userStatus = document.getElementById('userStatus').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const email = document.getElementById('email').value;
+
+            // In a real app, you would send this data to your backend
+            console.log('Profile updated:', { userName, userStatus, phoneNumber, email });
+            
+            // Show success message
+            alert('Profile updated successfully!');
+        }
+
+        // Profile picture upload
+        document.querySelector('.profile-picture-edit').addEventListener('click', function() {
+            document.getElementById('profilePictureInput').click();
+        });
+
+        document.getElementById('profilePictureInput').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.querySelector('.profile-picture').src = event.target.result;
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+
+        // Initialize form with user data (in a real app, this would come from your backend)
+        function loadUserData() {
+            // Simulated user data
+            const userData = {
+                name: "Steve Rogers",
+                status: "Avenger on duty",
+                phone: "+1 234 567 8901",
+                email: "captainamerica@avengers.com",
+                profilePic: "https://cdn.prod.website-files.com/650a942a4a97e98f0614ae42/6556502db26c53167c015a1e_captain-america-shield-james-back.webp"
+            };
+
+            document.getElementById('userName').value = userData.name;
+            document.getElementById('userStatus').value = userData.status;
+            document.getElementById('phoneNumber').value = userData.phone;
+            document.getElementById('email').value = userData.email;
+            document.querySelector('.profile-picture').src = userData.profilePic;
+        }
+
+        // Load user data when page loads
+        window.addEventListener('DOMContentLoaded', loadUserData);
+    </script>
+</body>
+</html>

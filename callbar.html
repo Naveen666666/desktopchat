@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Call History</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .sidebar {
+            width: 60px;
+            transition: width 0.3s ease;
+            overflow: hidden;
+        }
+
+        .expanded {
+            width: 200px;
+        }
+
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            color: white;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .sidebar ul li a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar.expanded .text {
+            display: inline;
+        }
+
+        .sidebar:not(.expanded) .text {
+            display: none;
+        }
+
+        .main-content {
+            height: 100vh;
+            width: calc(100% - 60px);
+            margin-left: 60px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.expanded + .main-content {
+            width: calc(100% - 200px);
+            margin-left: 200px;
+        }
+
+        .profile-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .call-item {
+            transition: all 0.2s ease;
+        }
+
+        .call-item:hover {
+            transform: translateX(2px);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+       <!-- Sidebar -->
+        <div id="sidebar" class="sidebar bg-gray-800 text-white p-2 h-full">
+            <ul class="space-y-4">
+                <li>
+                    <a href="#" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+                        <i class="fas fa-bars"></i>
+                        <span class="text">Menu</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="homebar.html">
+                        <i class="fas fa-home"></i>
+                        <span class="text">Home</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="statusbar.html">
+                        <i class="fas fa-spinner"></i>
+                        <span class="text">Status</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="callbar.html">
+                        <i class="fas fa-phone"></i>
+                        <span class="text">Calls</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="accountbar.html">
+                        <i class="fas fa-user"></i>
+                        <span class="text">Account</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content flex flex-1 p-4">
+            <div class="call-history w-full md:w-3/5 bg-white shadow-lg rounded-lg overflow-hidden">
+                <div class="p-4 bg-blue-500 text-white border-b">
+                    <div class="flex justify-between items-center">
+                        <h1 class="text-xl font-semibold">Call History</h1>
+                        <div class="relative">
+                            <input type="text" placeholder="Search calls..." class="pl-8 pr-4 py-2 rounded-lg text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                            <i class="fa-solid fa-search absolute left-2 top-3 text-gray-500"></i>
+                        </div>
+                    </div>
+                    <div class="flex mt-2 space-x-2">
+                        <button class="px-3 py-1 text-sm rounded-full bg-blue-400 text-white">All</button>
+                        <button class="px-3 py-1 text-sm rounded-full bg-white text-blue-500">Missed</button>
+                        <button class="px-3 py-1 text-sm rounded-full bg-white text-blue-500">Incoming</button>
+                        <button class="px-3 py-1 text-sm rounded-full bg-white text-blue-500">Outgoing</button>
+                    </div>
+                </div>
+                <div id="call-list" class="divide-y"></div>
+            </div>
+            <div class="chat-window hidden md:block md:w-2/5 bg-white ml-4 flex flex-col rounded-lg shadow-lg">
+                <div class="p-4 bg-blue-500 text-white border-b">
+                    <h2 class="text-xl font-semibold">Call Details</h2>
+                </div>
+                <div class="flex-1 p-6 overflow-y-auto" id="chat-box">
+                    <div id="chat-details" class="text-center py-10">
+                        <i class="fas fa-phone text-gray-300 text-5xl mb-4"></i>
+                        <p class="text-gray-500">Select a call to view details</p>
+                    </div>
+                </div>
+                <div class="p-4 border-t hidden" id="call-actions">
+                    <div class="flex justify-center space-x-4">
+                        <a href="homebar.html">
+                        <button class="p-3 bg-green-500 text-white rounded-full hover:bg-green-600 transition">
+                            <i class="fas fa-comment"></i>
+                        </button></a>
+                        <button class="p-3 bg-gray-200 rounded-full hover:bg-gray-300 transition">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("expanded");
+        }
+
+        const calls = [
+            { 
+                id: 1,
+                profile: "https://cricfit.com/wp-content/uploads/2022/11/Ben-Stokes.JPG.png", 
+                name: "stokes", 
+                type: "incoming", 
+                time: "10:30 AM", 
+                date: "Today",
+                phone: "+1 (234) 567-890",
+                duration: "2:45",
+                status: "completed"
+            },
+            { 
+                id: 2,
+                profile: "https://yespunjab.com/wp-content/uploads/2025/03/Matt-Henry-NZ-Cricketer.jpg", 
+                name: "henri", 
+                type: "missed", 
+                time: "8:20 AM", 
+                date: "Today",
+                phone: "+1 (112) 233-4455",
+                duration: "0:00",
+                status: "missed"
+            },
+            { 
+                id: 3,
+                profile: "https://circleofcricket.com/post_image/post_image_70586f0.jpg", 
+                name: "Smith", 
+                type: "outgoing", 
+                time: "9:45 AM", 
+                date: "Today",
+                phone: "+1 (987) 654-321",
+                duration: "5:12",
+                status: "completed"
+            },
+            { 
+                id: 4,
+                profile: "https://onecricketnews.akamaized.net/parth-editor/oc-dashboard/news-images-prod/1740669725057_SeanWilliamsJoinsElitelist.jpg?type=mq", 
+                name: "sean Williams", 
+                type: "incoming", 
+                time: "4:15 PM", 
+                date: "Yesterday",
+                phone: "+1 (555) 123-4567",
+                duration: "1:30",
+                status: "completed"
+            },
+            { 
+                id: 5,
+                profile: "https://ss-i.thgim.com/public/cricket/ipl/article17868656.ece/alternates/FREE_1200/BENCUTTING", 
+                name: "ben cutting", 
+                type: "missed", 
+                time: "11:05 AM", 
+                date: "Yesterday",
+                phone: "+1 (444) 555-6666",
+                duration: "0:00",
+                status: "missed"
+            }
+        ];
+
+        const callList = document.getElementById("call-list");
+        const chatDetails = document.getElementById("chat-details");
+        const callActions = document.getElementById("call-actions");
+        let selectedCallId = null;
+
+        function renderCallList() {
+            callList.innerHTML = '';
+            
+            // Group calls by date
+            const callsByDate = calls.reduce((acc, call) => {
+                if (!acc[call.date]) {
+                    acc[call.date] = [];
+                }
+                acc[call.date].push(call);
+                return acc;
+            }, {});
+            
+            // Render calls by date
+            for (const [date, dateCalls] of Object.entries(callsByDate)) {
+                const dateHeader = document.createElement('div');
+                dateHeader.className = 'p-3 bg-gray-100 text-gray-600 font-medium';
+                dateHeader.textContent = date;
+                callList.appendChild(dateHeader);
+                
+                dateCalls.forEach(call => {
+                    const callItem = document.createElement("div");
+                    callItem.className = `flex items-center p-4 call-item ${selectedCallId === call.id ? 'bg-blue-50' : 'hover:bg-gray-50'}`;
+                    callItem.setAttribute('data-id', call.id);
+                    callItem.onclick = () => showCallDetails(call);
+
+                    let iconClass = "fa-phone";
+                    let iconColor = "text-gray-500";
+                    
+                    if (call.type === "incoming") {
+                        iconClass = "fa-arrow-down";
+                        iconColor = call.status === "missed" ? "text-red-500" : "text-green-500";
+                    } else if (call.type === "outgoing") {
+                        iconClass = "fa-arrow-up";
+                        iconColor = "text-blue-500";
+                    }
+
+                    callItem.innerHTML = `
+                        <div class="relative mr-3">
+                            <img src="${call.profile}" class="profile-img" alt="${call.name}">
+                            ${call.status === "missed" ? '<span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white"></span>' : ''}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-center">
+                                <p class="font-medium truncate ${call.status === "missed" ? 'text-red-500' : ''}">${call.name}</p>
+                                <span class="text-xs text-gray-500">${call.time}</span>
+                            </div>
+                            <div class="flex items-center mt-1">
+                                <i class="fas ${iconClass} text-xs ${iconColor} mr-1"></i>
+                                <p class="text-xs text-gray-500 truncate">${call.phone} ${call.duration ? '• ' + call.duration : ''}</p>
+                            </div>
+                        </div>
+                    `;
+                    callList.appendChild(callItem);
+                });
+            }
+        }
+
+        function showCallDetails(call) {
+            selectedCallId = call.id;
+            renderCallList();
+            
+            chatDetails.innerHTML = `
+                <div class="flex flex-col items-center mb-6">
+                    <img src="${call.profile}" class="profile-img w-24 h-24 mb-4" alt="${call.name}">
+                    <h3 class="text-xl font-semibold">${call.name}</h3>
+                    <p class="text-gray-500">${call.phone}</p>
+                </div>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center p-3 bg-gray-100 rounded-lg">
+                        <span class="text-gray-600">Call type:</span>
+                        <span class="font-medium capitalize">${call.type}</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-100 rounded-lg">
+                        <span class="text-gray-600">Date:</span>
+                        <span class="font-medium">${call.date} at ${call.time}</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-100 rounded-lg">
+                        <span class="text-gray-600">Duration:</span>
+                        <span class="font-medium">${call.duration}</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-100 rounded-lg">
+                        <span class="text-gray-600">Status:</span>
+                        <span class="font-medium capitalize ${call.status === "missed" ? 'text-red-500' : ''}">${call.status}</span>
+                    </div>
+                </div>
+            `;
+            
+            callActions.classList.remove("hidden");
+        }
+
+        // Initialize the app
+        renderCallList();
+
+        // Make the interface responsive
+        function handleResize() {
+            const chatWindow = document.querySelector('.chat-window');
+            if (window.innerWidth < 768) {
+                chatWindow.classList.add('hidden');
+            } else {
+                chatWindow.classList.remove('hidden');
+            }
+        }
+
+        window.addEventListener('resize', handleResize);
+        handleResize();
+    </script>
+</body>
+</html>
